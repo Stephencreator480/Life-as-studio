@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d10">
+<title>Life As Studio</title>
+<style>
+:root{--bg:#0b0d10;--card:#14181e;--line:#2a3038;--text:#f4f6f8;--muted:#9aa3ad;--accent:#fff;--ink:#111}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#090b0e,#10141a);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{max-width:860px;margin:auto;padding:22px 16px 50px}.brand{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.brand h1{margin:0;font-size:25px}.pill{font-size:12px;padding:7px 10px;border:1px solid var(--line);border-radius:99px;color:var(--muted)}
+.card{background:rgba(20,24,30,.96);border:1px solid var(--line);border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 12px 40px #0005}
+label{display:block;font-weight:750;margin:16px 0 7px}input,select,textarea{width:100%;border:1px solid #343b45;background:#0d1015;color:#fff;border-radius:13px;padding:14px;font-size:16px;outline:none}textarea{min-height:100px;resize:vertical}
+button{width:100%;padding:15px;border:0;border-radius:13px;background:var(--accent);color:var(--ink);font-weight:800;font-size:16px;margin-top:16px}button.secondary{background:#20252d;color:#fff;border:1px solid #343b45}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hidden{display:none}.tabs{display:flex;gap:8px;overflow:auto;margin:15px 0}.tab{white-space:nowrap;width:auto;margin:0;padding:10px 13px;background:#171c23;color:#adb6c0;border:1px solid var(--line)}.tab.active{background:#fff;color:#111}
+h2{font-size:20px;margin:0 0 10px}.section-title{margin-top:24px}.output{white-space:pre-wrap;line-height:1.65;color:#e9edf2}.scene{padding:14px 0;border-bottom:1px solid var(--line)}.scene:last-child{border:0}.scene b{display:block;margin-bottom:5px}.note{color:var(--muted);font-size:13px;line-height:1.5}
+.badge{display:inline-block;padding:5px 8px;border-radius:8px;background:#222833;color:#d8dee5;font-size:12px;margin:3px 3px 0 0}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.app{padding-top:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand"><div><h1>Life As Studio</h1><div class="note">Documentary video builder</div></div><div class="pill">FREE</div></div>
+
+  <div class="card">
+    <h2>Create a video</h2>
+    <label>What is the video about?</label>
+    <input id="topic" value="Life as a blind person" placeholder="e.g. Life as a deaf person">
+
+    <div class="grid">
+      <div>
+        <label>Format</label>
+        <select id="format"><option value="short">Short documentary</option><option value="long">Long-form documentary</option></select>
+      </div>
+      <div>
+        <label>Length</label>
+        <select id="length"><option value="60">60 seconds</option><option value="90">90 seconds</option><option value="300">5 minutes</option><option value="600">10 minutes</option><option value="900">15 minutes</option></select>
+      </div>
+    </div>
+
+    <label>Story angle</label>
+    <select id="angle">
+      <option value="day">A day in their life</option>
+      <option value="challenge">The challenges people don't see</option>
+      <option value="change">How their life changed</option>
+      <option value="myth">What people misunderstand</option>
+    </select>
+    <button onclick="build()">Generate documentary</button>
+    <div class="note" style="margin-top:10px">This browser version creates the production blueprint. Real web research, AI voice and automatic MP4 rendering require external services/backend.</div>
+  </div>
+
+  <div id="results" class="hidden">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('script',this)">Script</button>
+      <button class="tab" onclick="showTab('scenes',this)">Scenes</button>
+      <button class="tab" onclick="showTab('sources',this)">Sources</button>
+    </div>
+
+    <div id="script" class="card">
+      <h2>Documentary script</h2>
+      <div id="scriptOut" class="output"></div>
+      <button class="secondary" onclick="copyText('scriptOut')">Copy script</button>
+    </div>
+
+    <div id="scenes" class="card hidden">
+      <h2>Scene-by-scene plan</h2>
+      <div id="sceneOut"></div>
+    </div>
+
+    <div id="sources" class="card hidden">
+      <h2>Research & sourcing checklist</h2>
+      <div id="sourceOut" class="output"></div>
+      <button class="secondary" onclick="downloadPlan()">Download production plan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let plan="";
+function cleanTopic(t){return t.replace(/^life as\s+/i,'').trim()}
+function build(){
+ const raw=document.getElementById('topic').value.trim()||'Life as a blind person';
+ const topic=raw.toLowerCase().startsWith('life as')?raw:'Life as '+raw;
+ const subject=cleanTopic(topic);
+ const len=+document.getElementById('length').value;
+ const angle=document.getElementById('angle').value;
+ const long=len>=300;
+ const hook = angle==='day'
+ ? `Imagine waking up tomorrow and having to experience an ordinary day in a completely different way. This is ${topic.toLowerCase()}.`
+ : angle==='challenge'
+ ? `Most people notice the obvious part of ${topic.toLowerCase()}. They rarely see everything that happens behind the scenes.`
+ : angle==='change'
+ ? `One moment can change the way a person experiences almost everything. This is the story behind ${topic.toLowerCase()}.`
+ : `There are things people say about ${topic.toLowerCase()} that sound harmless—but they can be completely wrong.`;
+ const intro=`${topic} is not one single experience. Every person's life is different, so this documentary focuses on a specific, documented human story while explaining the broader context carefully.`;
+ const body=long
+ ? `We follow the person's ordinary routine: waking up, getting ready, moving through their environment, communicating, working or studying, using technology, and interacting with other people.
+
+Along the way, focus on the small details most viewers would never think about. Explain what is difficult, what adaptations help, and what the person says they wish others understood.
+
+Then separate the personal story from the medical or factual context. Use reputable sources for statistics and medical claims, and make it clear when something is this person's individual experience rather than something everyone experiences.
+
+The strongest part of the story should remain human: goals, frustrations, relationships, independence, humor, uncertainty, and moments of progress.`
+ : `Show the ordinary moments that most people take for granted. Then reveal the practical challenges behind those moments.
+
+Use a real person's documented experience whenever possible. Explain what they say about their own life, and avoid assuming that every person with the same condition experiences it in the same way.`;
+ const ending=`The goal is not to make viewers feel sorry for someone. It is to help them understand a life they may never have experienced themselves.`;
+ const script=`HOOK\n${hook}\n\nINTRO\n${intro}\n\nTHE STORY\n${body}\n\nENDING\n${ending}\n\nEDITOR NOTE\nKeep the narration factual, human and respectful. Do not invent diagnoses, quotes, statistics or personal experiences.`;
+
+ const sceneCount=long?12:8;
+ const scenes=[];
+ const labels=[
+  ['Hook','Immediate visual that creates curiosity.','Use a real/documentary visual; avoid misleading dramatization.'],
+  ['Who is this person?','Introduce the person and the situation.','Portrait, interview, verified footage or licensed stills.'],
+  ['The ordinary moment','Show an everyday task.','Close-ups and natural environmental footage.'],
+  ['What people miss','Explain a challenge that is not obvious.','Supporting footage + simple on-screen text.'],
+  ['How they adapt','Show tools, routines or strategies.','Relevant real-world visuals.'],
+  ['The human side','Goals, relationships, emotions or personal perspective.','First-person material where available.'],
+  ['The facts','Add carefully sourced context.','Charts, documents or reputable-source visuals.'],
+  ['The ending','Return to the person and leave the viewer with one thought.','Quiet final shot + final line.']
+ ];
+ for(let i=0;i<sceneCount;i++){
+   const base=labels[i%labels.length];
+   scenes.push(`<div class="scene"><b>${String(i+1).padStart(2,'0')}. ${base[0]}</b><div>${base[1]}</div><div class="note">${base[2]}</div></div>`);
+ }
+ document.getElementById('scriptOut').textContent=script;
+ document.getElementById('sceneOut').innerHTML=scenes.join('');
+ document.getElementById('sourceOut').textContent=
+`PRIMARY STORY
+• Find a real first-person account, interview, documentary or public story.
+• Verify the person's identity and the context of their story.
+
+FACT CHECKING
+• Use reputable medical/health organizations for medical facts.
+• Verify statistics, dates and definitions.
+• Never diagnose a person from a video or article.
+
+FOOTAGE
+• Prefer licensed stock, public-domain material, official press/media assets, or footage you have permission to use.
+• Do not present AI-generated or dramatized footage as real.
+
+SENSITIVITY
+• Avoid graphic imagery used only for shock.
+• Do not imply that every person with the condition lives the same way.
+• Keep the focus on the person's life, not only the illness.
+
+VIDEO PACKAGING
+Suggested title: ${topic}: What Everyday Life Really Looks Like
+Alternative: A Day in the Life of ${subject}
+Thumbnail idea: One powerful real-life visual + 3–5 words of curiosity-driven text.`;
+ plan=`LIFE AS STUDIO\n\nTOPIC: ${topic}\nLENGTH: ${len}s\n\nSCRIPT\n${script}\n\nSOURCE CHECKLIST\n${document.getElementById('sourceOut').textContent}`;
+ document.getElementById('results').classList.remove('hidden');
+ document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+function showTab(id,el){
+ document.querySelectorAll('#results .card').forEach(x=>{if(['script','scenes','sources'].includes(x.id))x.classList.add('hidden')});
+ document.getElementById(id).classList.remove('hidden');
+ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');
+}
+function copyText(id){
+ const t=document.getElementById(id).textContent;
+ navigator.clipboard?.writeText(t).then(()=>alert('Copied!')).catch(()=>alert('Select and copy the text.'));
+}
+function downloadPlan(){
+ const blob=new Blob([plan],{type:'text/plain'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='life-as-production-plan.txt';a.click();
+}
+</script>
+</body>
+</html>
