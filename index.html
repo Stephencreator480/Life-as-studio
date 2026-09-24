@@ -1,170 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0b0d10">
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Life As Studio</title>
 <style>
-:root{--bg:#0b0d10;--card:#14181e;--line:#2a3038;--text:#f4f6f8;--muted:#9aa3ad;--accent:#fff;--ink:#111}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#090b0e,#10141a);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.app{max-width:860px;margin:auto;padding:22px 16px 50px}.brand{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.brand h1{margin:0;font-size:25px}.pill{font-size:12px;padding:7px 10px;border:1px solid var(--line);border-radius:99px;color:var(--muted)}
-.card{background:rgba(20,24,30,.96);border:1px solid var(--line);border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 12px 40px #0005}
-label{display:block;font-weight:750;margin:16px 0 7px}input,select,textarea{width:100%;border:1px solid #343b45;background:#0d1015;color:#fff;border-radius:13px;padding:14px;font-size:16px;outline:none}textarea{min-height:100px;resize:vertical}
-button{width:100%;padding:15px;border:0;border-radius:13px;background:var(--accent);color:var(--ink);font-weight:800;font-size:16px;margin-top:16px}button.secondary{background:#20252d;color:#fff;border:1px solid #343b45}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hidden{display:none}.tabs{display:flex;gap:8px;overflow:auto;margin:15px 0}.tab{white-space:nowrap;width:auto;margin:0;padding:10px 13px;background:#171c23;color:#adb6c0;border:1px solid var(--line)}.tab.active{background:#fff;color:#111}
-h2{font-size:20px;margin:0 0 10px}.section-title{margin-top:24px}.output{white-space:pre-wrap;line-height:1.65;color:#e9edf2}.scene{padding:14px 0;border-bottom:1px solid var(--line)}.scene:last-child{border:0}.scene b{display:block;margin-bottom:5px}.note{color:var(--muted);font-size:13px;line-height:1.5}
-.badge{display:inline-block;padding:5px 8px;border-radius:8px;background:#222833;color:#d8dee5;font-size:12px;margin:3px 3px 0 0}
-@media(max-width:600px){.grid{grid-template-columns:1fr}.app{padding-top:16px}}
-</style>
-</head>
-<body>
-<div class="app">
-  <div class="brand"><div><h1>Life As Studio</h1><div class="note">Documentary video builder</div></div><div class="pill">FREE</div></div>
+*{box-sizing:border-box}body{margin:0;background:#0b0d12;color:#f4f4f5;font-family:system-ui,-apple-system,sans-serif}
+.wrap{max-width:1000px;margin:auto;padding:22px 15px 60px}.brand{font-size:28px;font-weight:800}.sub,.small{color:#9ca3af}
+.card{background:#12151c;border:1px solid #292e39;border-radius:16px;padding:17px;margin-top:15px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+label{display:block;color:#b9bfca;font-size:12px;margin-bottom:6px}input,select{width:100%;padding:12px;border-radius:9px;border:1px solid #303744;background:#0c0f14;color:#fff;font-size:15px}
+button{border:0;border-radius:10px;padding:12px 15px;font-weight:700;cursor:pointer}.primary{width:100%;margin-top:14px}.ghost{background:#202530;color:#fff}.danger{background:#382126;color:#fff}
+.ref{display:flex;gap:7px;margin:7px 0}.ref input{flex:1}.tabs{display:flex;gap:7px;margin-bottom:12px}.tab{background:#202530;color:#ddd}.active{background:#fff;color:#111}
+.panel{white-space:pre-wrap;line-height:1.65}.scene{padding:11px 0;border-bottom:1px solid #292e39}.pill{font-size:11px;background:#202530;border-radius:20px;padding:4px 7px;margin-right:5px;color:#cbd0da}
+.stage{display:none}.canvasbox{aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden}.canvasbox canvas{width:100%;height:100%}progress{width:100%;margin-top:8px}
+</style></head><body><div class="wrap">
+<h1 class="brand">Life As Studio</h1><div class="sub">Long-form documentary + animated video builder</div>
 
-  <div class="card">
-    <h2>Create a video</h2>
-    <label>What is the video about?</label>
-    <input id="topic" value="Life as a blind person" placeholder="e.g. Life as a deaf person">
+<div class="card"><div class="grid">
+<div><label>DOCUMENTARY TOPIC</label><input id="topic" value="Life as a blind person"></div>
+<div><label>LENGTH</label><select id="mins"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div>
+<div><div><label>STORY ANGLE</label><select id="angle"><option>A day in their life</option><option>Challenges people don't see</option><option>How their life changed</option><option>What people misunderstand</option></select></div></div>
+<div><label>VISUAL STYLE</label><select id="style"><option>Animated Documentary</option><option>Cinematic Illustration</option><option>Motion Comic</option></select></div>
+</div>
+<div style="margin-top:14px"><label>REFERENCE YOUTUBE VIDEOS — OPTIONAL</label><div id="refs"></div><button class="ghost" onclick="addRef()">+ Add YouTube reference</button>
+<div class="small" style="margin-top:7px">Add videos whose storytelling structure you like. This version uses the links as references; it does not copy their scripts.</div></div>
+<button class="primary" onclick="generate()">Generate Documentary</button><div id="status" class="sub" style="margin-top:10px"></div></div>
 
-    <div class="grid">
-      <div>
-        <label>Format</label>
-        <select id="format"><option value="short">Short documentary</option><option value="long">Long-form documentary</option></select>
-      </div>
-      <div>
-        <label>Length</label>
-        <select id="length"><option value="60">60 seconds</option><option value="90">90 seconds</option><option value="300">5 minutes</option><option value="600">10 minutes</option><option value="900">15 minutes</option></select>
-      </div>
-    </div>
+<div class="card" id="out" style="display:none"><div class="tabs"><button class="tab active" onclick="tab('script',this)">Script</button><button class="tab" onclick="tab('scenes',this)">Scenes</button><button class="tab" onclick="tab('plan',this)">Production</button></div>
+<div id="script" class="panel"></div><div id="scenes" class="panel" style="display:none"></div><div id="plan" class="panel" style="display:none"></div>
+<div style="margin-top:14px"><button onclick="copyPlan()">Copy</button> <button class="ghost" onclick="downloadPlan()">Download plan</button> <button class="ghost" onclick="render()">Render animated video</button></div></div>
 
-    <label>Story angle</label>
-    <select id="angle">
-      <option value="day">A day in their life</option>
-      <option value="challenge">The challenges people don't see</option>
-      <option value="change">How their life changed</option>
-      <option value="myth">What people misunderstand</option>
-    </select>
-    <button onclick="build()">Generate documentary</button>
-    <div class="note" style="margin-top:10px">This browser version creates the production blueprint. Real web research, AI voice and automatic MP4 rendering require external services/backend.</div>
-  </div>
+<div class="card stage" id="stage"><b>Animated video renderer</b><div class="small">Creates a browser-rendered WebM from the generated scenes.</div><div class="canvasbox"><canvas id="c" width="1280" height="720"></canvas></div><progress id="prog" max="100" value="0"></progress><div id="rs" class="sub"></div><div id="dl"></div></div>
 
-  <div id="results" class="hidden">
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('script',this)">Script</button>
-      <button class="tab" onclick="showTab('scenes',this)">Scenes</button>
-      <button class="tab" onclick="showTab('sources',this)">Sources</button>
-    </div>
-
-    <div id="script" class="card">
-      <h2>Documentary script</h2>
-      <div id="scriptOut" class="output"></div>
-      <button class="secondary" onclick="copyText('scriptOut')">Copy script</button>
-    </div>
-
-    <div id="scenes" class="card hidden">
-      <h2>Scene-by-scene plan</h2>
-      <div id="sceneOut"></div>
-    </div>
-
-    <div id="sources" class="card hidden">
-      <h2>Research & sourcing checklist</h2>
-      <div id="sourceOut" class="output"></div>
-      <button class="secondary" onclick="downloadPlan()">Download production plan</button>
-    </div>
-  </div>
+<div class="card small"><b>Free-version note:</b> The browser can create the long script, scene plan and an animated WebM locally. Automatic web research, AI voice and photorealistic AI scene generation need external services/API access, so this version does not pretend those are unlimited-free.</div>
 </div>
 
 <script>
-let plan="";
-function cleanTopic(t){return t.replace(/^life as\s+/i,'').trim()}
-function build(){
- const raw=document.getElementById('topic').value.trim()||'Life as a blind person';
- const topic=raw.toLowerCase().startsWith('life as')?raw:'Life as '+raw;
- const subject=cleanTopic(topic);
- const len=+document.getElementById('length').value;
- const angle=document.getElementById('angle').value;
- const long=len>=300;
- const hook = angle==='day'
- ? `Imagine waking up tomorrow and having to experience an ordinary day in a completely different way. This is ${topic.toLowerCase()}.`
- : angle==='challenge'
- ? `Most people notice the obvious part of ${topic.toLowerCase()}. They rarely see everything that happens behind the scenes.`
- : angle==='change'
- ? `One moment can change the way a person experiences almost everything. This is the story behind ${topic.toLowerCase()}.`
- : `There are things people say about ${topic.toLowerCase()} that sound harmless—but they can be completely wrong.`;
- const intro=`${topic} is not one single experience. Every person's life is different, so this documentary focuses on a specific, documented human story while explaining the broader context carefully.`;
- const body=long
- ? `We follow the person's ordinary routine: waking up, getting ready, moving through their environment, communicating, working or studying, using technology, and interacting with other people.
-
-Along the way, focus on the small details most viewers would never think about. Explain what is difficult, what adaptations help, and what the person says they wish others understood.
-
-Then separate the personal story from the medical or factual context. Use reputable sources for statistics and medical claims, and make it clear when something is this person's individual experience rather than something everyone experiences.
-
-The strongest part of the story should remain human: goals, frustrations, relationships, independence, humor, uncertainty, and moments of progress.`
- : `Show the ordinary moments that most people take for granted. Then reveal the practical challenges behind those moments.
-
-Use a real person's documented experience whenever possible. Explain what they say about their own life, and avoid assuming that every person with the same condition experiences it in the same way.`;
- const ending=`The goal is not to make viewers feel sorry for someone. It is to help them understand a life they may never have experienced themselves.`;
- const script=`HOOK\n${hook}\n\nINTRO\n${intro}\n\nTHE STORY\n${body}\n\nENDING\n${ending}\n\nEDITOR NOTE\nKeep the narration factual, human and respectful. Do not invent diagnoses, quotes, statistics or personal experiences.`;
-
- const sceneCount=long?12:8;
- const scenes=[];
- const labels=[
-  ['Hook','Immediate visual that creates curiosity.','Use a real/documentary visual; avoid misleading dramatization.'],
-  ['Who is this person?','Introduce the person and the situation.','Portrait, interview, verified footage or licensed stills.'],
-  ['The ordinary moment','Show an everyday task.','Close-ups and natural environmental footage.'],
-  ['What people miss','Explain a challenge that is not obvious.','Supporting footage + simple on-screen text.'],
-  ['How they adapt','Show tools, routines or strategies.','Relevant real-world visuals.'],
-  ['The human side','Goals, relationships, emotions or personal perspective.','First-person material where available.'],
-  ['The facts','Add carefully sourced context.','Charts, documents or reputable-source visuals.'],
-  ['The ending','Return to the person and leave the viewer with one thought.','Quiet final shot + final line.']
- ];
- for(let i=0;i<sceneCount;i++){
-   const base=labels[i%labels.length];
-   scenes.push(`<div class="scene"><b>${String(i+1).padStart(2,'0')}. ${base[0]}</b><div>${base[1]}</div><div class="note">${base[2]}</div></div>`);
- }
- document.getElementById('scriptOut').textContent=script;
- document.getElementById('sceneOut').innerHTML=scenes.join('');
- document.getElementById('sourceOut').textContent=
-`PRIMARY STORY
-• Find a real first-person account, interview, documentary or public story.
-• Verify the person's identity and the context of their story.
-
-FACT CHECKING
-• Use reputable medical/health organizations for medical facts.
-• Verify statistics, dates and definitions.
-• Never diagnose a person from a video or article.
-
-FOOTAGE
-• Prefer licensed stock, public-domain material, official press/media assets, or footage you have permission to use.
-• Do not present AI-generated or dramatized footage as real.
-
-SENSITIVITY
-• Avoid graphic imagery used only for shock.
-• Do not imply that every person with the condition lives the same way.
-• Keep the focus on the person's life, not only the illness.
-
-VIDEO PACKAGING
-Suggested title: ${topic}: What Everyday Life Really Looks Like
-Alternative: A Day in the Life of ${subject}
-Thumbnail idea: One powerful real-life visual + 3–5 words of curiosity-driven text.`;
- plan=`LIFE AS STUDIO\n\nTOPIC: ${topic}\nLENGTH: ${len}s\n\nSCRIPT\n${script}\n\nSOURCE CHECKLIST\n${document.getElementById('sourceOut').textContent}`;
- document.getElementById('results').classList.remove('hidden');
- document.getElementById('results').scrollIntoView({behavior:'smooth'});
-}
-function showTab(id,el){
- document.querySelectorAll('#results .card').forEach(x=>{if(['script','scenes','sources'].includes(x.id))x.classList.add('hidden')});
- document.getElementById(id).classList.remove('hidden');
- document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');
-}
-function copyText(id){
- const t=document.getElementById(id).textContent;
- navigator.clipboard?.writeText(t).then(()=>alert('Copied!')).catch(()=>alert('Select and copy the text.'));
-}
-function downloadPlan(){
- const blob=new Blob([plan],{type:'text/plain'});
- const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='life-as-production-plan.txt';a.click();
-}
-</script>
-</body>
-</html>
+let D=null;addRef();
+function addRef(){let d=document.createElement('div');d.className='ref';d.innerHTML='<input placeholder="https://youtube.com/watch?v=..."><button class="danger" onclick="this.parentElement.remove()">×</button>';document.getElementById('refs').appendChild(d)}
+const esc=s=>s.replace(/[&<>]/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[x]));
+function paragraphs(topic,angle,n){let a=[
+`Imagine waking up tomorrow and discovering that something ordinary for most people is no longer ordinary. ${topic} is not simply a label. It can affect the way a person moves through a morning, communicates, works, travels, rests and thinks about the future.`,
+`This documentary looks at ${topic.toLowerCase()} through everyday moments rather than a list of facts. The focus is on the details people often miss: small adaptations, unexpected frustrations, moments of independence and the ways other people's assumptions can shape an ordinary day.`,
+`The central question is simple: what does a normal day actually feel like? ${angle} becomes the lens for understanding that question. There is no single experience shared by everyone in this situation, and the details can vary widely from person to person.`,
+`A routine that looks simple from the outside can involve planning, equipment, assistance, technology or decisions that other people never have to make. A task that takes seconds for one person may require preparation for another.`,
+`One of the biggest misunderstandings is that people notice the visible part of a condition and miss everything around it. They may not see the effort involved in planning a journey, communicating a need, asking for help, refusing unwanted help or trying to do something independently.`,
+`Then there are social moments. A stranger may stare. Someone may speak to a companion instead of the person themselves. Another person may offer help without asking. These moments can be awkward, frustrating, funny or surprisingly kind. The person living this life is still a person first, with preferences, ambitions, humor, fears and plans.`,
+`Technology and adaptation can change the equation. Phones, accessibility tools, mobility equipment, medical support, specialized software or simple household adjustments can make difficult tasks more manageable. These tools do not erase every challenge, but they can create more independence.`,
+`Work and education can introduce another layer. Access is not only about whether a building has a ramp or a website has a setting. It can also involve attitudes, communication, flexibility, transportation and whether a person is given the same opportunity to participate.`,
+`Relationships are another part of the story that is easy to overlook. Friends and family may want to help, but learning when to help and when to step back can take time. Independence does not always mean doing everything alone. Sometimes it means having control over how support is given.`,
+`There are also quiet moments that never become dramatic footage: waiting, practicing, recovering, preparing for tomorrow, dealing with a difficult day and celebrating a small victory. These moments may not look extraordinary, but together they can tell us more about a person's life than a dramatic montage ever could.`,
+`It is important not to turn one person's experience into a universal rule. ${topic} can look very different depending on age, personality, environment, finances, support, access to healthcare or technology and the person's own history.`,
+`A diagnosis, disability or life-changing event can be part of someone's story without becoming the whole story. Behind the label are ordinary interests, relationships, responsibilities and hopes for the future.`,
+`By the end of the day, ordinary things are often what remain: a meal, a conversation, work that still needs to be finished, a message from a friend or a plan for the next morning. Life continues, even when the way of living it has changed.`,
+`So when we ask what life is like in this situation, the answer is more complicated than one sentence. There can be barriers, adaptations, frustrations, moments of independence, moments of vulnerability and moments that are completely ordinary.`,
+`The goal is not to imagine another person's life perfectly. It is to understand it with a little more attention and a little less assumption. Behind every condition or life-changing experience there is a person whose life is still made of thousands of small decisions and moments.`
+];let words=n*145,out=[],c=0;while(c<words){let p=a[out.length%a.length];out.push(p);c+=p.split(/\s+/).length}return out}
+function generate(){let topic=document.getElementById('topic').value.trim()||'Life as a person with an unusual life experience',n=+document.getElementById('mins').value,angle=document.getElementById('angle').value,style=document.getElementById('style').value;
+let refs=[...document.querySelectorAll('#refs input')].map(x=>x.value.trim()).filter(Boolean),ps=paragraphs(topic,angle,n),script=ps.join('\n\n'),ss=script.split(/(?<=[.!?])\s+/).filter(Boolean),count=Math.max(12,Math.round(n*2.2)),sc=[];
+for(let i=0;i<count;i++){let s=ss[Math.floor(i*ss.length/count)]||ss[0];let visuals=['wide establishing shot','morning routine close-up','character preparing for the day','everyday obstacle','hands using an object','travel sequence','social interaction','technology/accessibility tool','work or study','quiet emotional close-up','evening routine','reflective final shot'];sc.push({i:i+1,t:Math.floor(i*n/count)+':'+String(Math.floor((i*n*60/count)%60)).padStart(2,'0'),s,v:style+': '+visuals[i%visuals.length]+', cinematic camera movement, subtle background motion, documentary mood. Topic: '+topic})}
+D={topic,n,angle,style,refs,script,sc};document.getElementById('out').style.display='block';document.getElementById('script').textContent=script;document.getElementById('scenes').innerHTML=sc.map(x=>`<div class="scene"><span class="pill">Scene ${x.i}</span><span class="pill">${x.t}</span><br><b>Narration:</b> ${esc(x.s)}<br><b>Visual:</b> ${esc(x.v)}</div>`).join('');
+document.getElementById('plan').textContent=`TITLE IDEAS\nLife As: ${topic}\nWhat People Don't See About ${topic}\nA Day Inside ${topic}\n\nTARGET\n${n} minutes • about ${n*145} words • ${count} animated scenes\n\nREFERENCES\n${refs.join('\n')||'None supplied — default documentary structure used.'}`;document.getElementById('status').textContent='Done — long-form script and animated scenes created.'}
+function tab(id,b){['script','scenes','plan'].forEach(x=>document.getElementById(x).style.display=x==id?'block':'none');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active')}
+function text(){return 'LIFE AS STUDIO\n'+D.topic+'\n\nSCRIPT\n'+D.script+'\n\nSCENES\n'+D.sc.map(x=>`Scene ${x.i} [${x.t}]\n${x.s}\nVISUAL: ${x.v}`).join('\n\n')}
+function copyPlan(){navigator.clipboard?.writeText(text())}
+function downloadPlan(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text()],{type:'text/plain'}));a.download='life-as-studio-plan.txt';a.click()}
+async function render(){let box=document.getElementById('stage');box.style.display='block';box.scrollIntoView({behavior:'smooth'});let c=document.getElementById('c'),x=c.getContext('2d'),fps=12,total=Math.max(360,Math.min(3600,D.n*60*fps)),chunks=[],stream=c.captureStream(fps),r;try{r=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9'})}catch(e){r=new MediaRecorder(stream)}r.ondataavailable=e=>e.data.size&&chunks.push(e.data);r.onstop=()=>{let u=URL.createObjectURL(new Blob(chunks,{type:'video/webm'}));document.getElementById('dl').innerHTML='<a href="'+u+'" download="life-as-documentary.webm"><button>Download animated video</button></a>';document.getElementById('rs').textContent='Render complete.'};r.start();
+for(let f=0;f<total;f++){let p=f/(total-1),i=Math.min(D.sc.length-1,Math.floor(p*D.sc.length));draw(x,c,D,i);if(f%fps==0){document.getElementById('prog').value=p*100;document.getElementById('rs').textContent='Rendering '+Math.round(p*100)+'%…'}await new Promise(q=>setTimeout(q,1000/fps))}r.stop()}
+function draw(x,c,d,i){let w=c.width,h=c.height;x.fillStyle='#080b12';x.fillRect(0,0,w,h);let g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,'#182131');g.addColorStop(1,'#03050a');x.fillStyle=g;x.fillRect(0,0,w,h);let t=Date.now()/1000;x.fillStyle='rgba(255,255,255,.07)';for(let k=0;k<9;k++){x.beginPath();x.arc((k*180+t*20*(k%3+1))%w,120+k*65,45,0,7);x.fill()}x.fillStyle='rgba(255,255,255,.1)';x.beginPath();x.arc(w/2,h/2-65,72,0,7);x.fill();x.fillStyle='rgba(255,255,255,.07)';x.beginPath();x.roundRect(w/2-100,h/2,200,190,40);x.fill();x.textAlign='center';x.fillStyle='#fff';x.font='700 40px system-ui';x.fillText(d.topic.slice(0,55),w/2,80);x.fillStyle='#d1d5db';x.font='500 25px system-ui';let s=d.sc[i].v.split(' '),line='',yy=h-120;for(let q of s){let z=line?line+' '+q:q;if(x.measureText(z).width>1050){x.fillText(line,w/2,yy);yy+=32;line=q}else line=z}x.fillText(line,w/2,yy);x.fillStyle='#aaa';x.font='18px system-ui';x.fillText('Animated Documentary • Scene '+(i+1),w/2,h-40)}
+</script></body></html>
