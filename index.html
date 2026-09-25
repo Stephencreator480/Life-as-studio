@@ -64,5 +64,128 @@ function copyPlan(){navigator.clipboard?.writeText(text())}
 function downloadPlan(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text()],{type:'text/plain'}));a.download='life-as-studio-plan.txt';a.click()}
 async function render(){let box=document.getElementById('stage');box.style.display='block';box.scrollIntoView({behavior:'smooth'});let c=document.getElementById('c'),x=c.getContext('2d'),fps=12,total=Math.max(360,Math.min(3600,D.n*60*fps)),chunks=[],stream=c.captureStream(fps),r;try{r=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp8'})}catch(e){r=new MediaRecorder(stream)}r.ondataavailable=e=>e.data.size&&chunks.push(e.data);r.onstop=()=>{let u=URL.createObjectURL(new Blob(chunks,{type:'video/webm'}));document.getElementById('dl').innerHTML='<a href="'+u+'" download="life-as-documentary.webm"><button>Download animated video</button></a>';document.getElementById('rs').textContent='Render complete.'};r.start();
 for(let f=0;f<total;f++){let p=f/(total-1),i=Math.min(D.sc.length-1,Math.floor(p*D.sc.length));draw(x,c,D,i);if(f%fps==0){document.getElementById('prog').value=p*100;document.getElementById('rs').textContent='Rendering '+Math.round(p*100)+'%…'}await new Promise(q=>setTimeout(q,1000/fps))}r.stop()}
-function draw(x,c,d,i){let w=c.width,h=c.height;x.fillStyle='#080b12';x.fillRect(0,0,w,h);let g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,'#182131');g.addColorStop(1,'#03050a');x.fillStyle=g;x.fillRect(0,0,w,h);let t=Date.now()/1000;x.fillStyle='rgba(255,255,255,.07)';for(let k=0;k<9;k++){x.beginPath();x.arc((k*180+t*20*(k%3+1))%w,120+k*65,45,0,7);x.fill()}x.fillStyle='rgba(255,255,255,.1)';x.beginPath();x.arc(w/2,h/2-65,72,0,7);x.fill();x.fillStyle='rgba(255,255,255,.07)';x.beginPath();x.roundRect(w/2-100,h/2,200,190,40);x.fill();x.textAlign='center';x.fillStyle='#fff';x.font='700 40px system-ui';x.fillText(d.topic.slice(0,55),w/2,80);x.fillStyle='#d1d5db';x.font='500 25px system-ui';let s=d.sc[i].v.split(' '),line='',yy=h-120;for(let q of s){let z=line?line+' '+q:q;if(x.measureText(z).width>1050){x.fillText(line,w/2,yy);yy+=32;line=q}else line=z}x.fillText(line,w/2,yy);x.fillStyle='#aaa';x.font='18px system-ui';x.fillText('Animated Documentary • Scene '+(i+1),w/2,h-40)}
+function draw(x,c,d,i){
+  let w=c.width,h=c.height;
+  let s=d.sc[i].v.toLowerCase();
+  let t=Date.now()/1000;
+
+  x.fillStyle='#070a10';
+  x.fillRect(0,0,w,h);
+
+  let g=x.createLinearGradient(0,0,w,h);
+  g.addColorStop(0,'#202b3d');
+  g.addColorStop(1,'#05070b');
+  x.fillStyle=g;
+  x.fillRect(0,0,w,h);
+
+  /* moving cinematic background */
+  x.fillStyle='rgba(255,255,255,.08)';
+  for(let k=0;k<12;k++){
+    let px=(k*140+t*25*(k%2?1:-1))%w;
+    let py=100+k*55;
+    x.beginPath();
+    x.arc(px,py,35+(k%3)*15,0,Math.PI*2);
+    x.fill();
+  }
+
+  /* scene illustration */
+  x.save();
+  x.translate(w/2,h/2-30);
+
+  let isCity=/city|street|road|building|traffic|crowd/.test(s);
+  let isNature=/forest|tree|mountain|nature|ocean|river|water/.test(s);
+  let isPerson=/person|people|man|woman|child|blind|life|human/.test(s);
+
+  if(isCity){
+    x.fillStyle='#151b25';
+    for(let k=-5;k<=5;k++){
+      let bh=120+Math.abs(k)*18;
+      x.fillRect(k*150-65,180-bh,110,bh);
+      x.fillStyle='rgba(255,220,120,.45)';
+      for(let j=0;j<4;j++) x.fillRect(k*150-40,210-bh+j*35,12,18);
+      x.fillStyle='#151b25';
+    }
+  }else if(isNature){
+    x.fillStyle='#17251c';
+    for(let k=-5;k<=5;k++){
+      x.beginPath();
+      x.moveTo(k*150,170);
+      x.lineTo(k*150-90,170);
+      x.lineTo(k*150,20-Math.abs(k)*8);
+      x.lineTo(k*150+90,170);
+      x.fill();
+    }
+    x.fillStyle='#303b27';
+    x.fillRect(-640,170,1280,180);
+  }
+
+  if(isPerson){
+    x.fillStyle='#e6e6e6';
+    x.beginPath();
+    x.arc(0,-110,65,0,Math.PI*2);
+    x.fill();
+
+    x.fillStyle='#bfc5cf';
+    x.beginPath();
+    x.roundRect(-90,-35,180,230,45);
+    x.fill();
+
+    x.strokeStyle='#ddd';
+    x.lineWidth=22;
+    x.beginPath();
+    x.moveTo(-55,30);
+    x.lineTo(-170,155);
+    x.moveTo(55,30);
+    x.lineTo(170,155);
+    x.stroke();
+
+    x.lineWidth=18;
+    x.beginPath();
+    x.moveTo(-35,190);
+    x.lineTo(-70,320);
+    x.moveTo(35,190);
+    x.lineTo(70,320);
+    x.stroke();
+
+    if(/blind|cane/.test(s)){
+      x.strokeStyle='#fff';
+      x.lineWidth=7;
+      x.beginPath();
+      x.moveTo(90,110);
+      x.lineTo(210,330);
+      x.stroke();
+    }
+  }
+
+  x.restore();
+
+  /* documentary text */
+  x.textAlign='center';
+  x.fillStyle='#fff';
+  x.font='700 42px system-ui';
+  x.fillText(d.topic.slice(0,55),w/2,75);
+
+  x.fillStyle='#e0e4ea';
+  x.font='500 25px system-ui';
+
+  let words=d.sc[i].v.split(' ');
+  let line='',yy=h-125;
+
+  for(let q of words){
+    let z=line?line+' '+q:q;
+    if(x.measureText(z).width>1050){
+      x.fillText(line,w/2,yy);
+      yy+=32;
+      line=q;
+    }else{
+      line=z;
+    }
+  }
+
+  x.fillText(line,w/2,yy);
+
+  x.fillStyle='#aaa';
+  x.font='18px system-ui';
+  x.fillText('Animated Documentary • Scene '+(i+1),w/2,h-40);
+}
 </script></body></html>
